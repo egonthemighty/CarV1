@@ -215,8 +215,30 @@ Project infrastructure complete. Ready for development and training.
 - ✅ Created complete Colab notebook for GPU training
 - ✅ Colab provides free GPU, easier setup, better UX
 
+### 2026-01-03 - CRITICAL: Camera Perspective Issue ⚠️
+**PROBLEM IDENTIFIED**: Major mismatch between training and deployment!
+- **Current training**: TOP-DOWN camera view (bird's eye)
+- **Real hardware**: FORWARD-FACING camera (first-person from car)
+- **Impact**: Model won't work on real car - completely different visual input
+
+**Solutions**:
+1. **Retrain with first-person view** (RECOMMENDED) ⭐
+   - Update CameraLineFollowEnv to render from car's perspective
+   - Camera sees road ahead at ~30-45° angle, not full track
+   - Matches real Pi Camera mounting position
+   
+2. **Mount camera for top-down** (NOT PRACTICAL)
+   - Would need camera on tall pole/gimbal
+   - Doesn't match intended hardware setup
+   
+3. **Transfer learning** (FALLBACK)
+   - Fine-tune trained model on real camera footage
+   - Requires physical track and training runs
+
+**ACTION REQUIRED**: Update environment rendering before next training run!
+
 ---
 
 **Last Updated**: 2026-01-03
 **Project Start**: 2026-01-03
-**Status**: Infrastructure complete, Colab training ready
+**Status**: Camera perspective needs redesign before hardware deployment
