@@ -26,7 +26,7 @@ Edit `config/config.py`:
 ```python
 HUGGINGFACE_CONFIG = {
     'enabled': True,  # Enable HF integration
-    'repo_id': 'your-username/carv1-model',  # Your HF repo
+    'repo_id': 'egonthemighty/carV1',  # Your HF repo
     'private': False,  # Public or private repo
     'push_freq': 50000,  # Push every 50k steps
     'push_on_complete': True,  # Push final model
@@ -77,7 +77,7 @@ from utils.huggingface import load_from_hub
 from env.car_env import CarEnv
 
 # Load trained model
-model = load_from_hub("your-username/carv1-model", "final_model")
+model = load_from_hub("egonthemighty/carV1", "final_model")
 
 # Use it
 env = CarEnv(render_mode="human")
@@ -97,7 +97,7 @@ from utils.huggingface import push_final_model, create_model_card
 # Push a specific model
 push_final_model(
     model=model,
-    repo_id="your-username/carv1-model",
+    repo_id="egonthemighty/carV1",
     model_name="experiment_v1",
     commit_message="Experiment with higher learning rate"
 )
@@ -122,7 +122,7 @@ evaluation_info = {
 }
 
 create_model_card(
-    repo_id="your-username/carv1-model",
+    repo_id="egonthemighty/carV1",
     model_info=model_info,
     training_info=training_info,
     evaluation_info=evaluation_info
@@ -133,7 +133,7 @@ create_model_card(
 
 Your repository will contain:
 ```
-your-username/carv1-model/
+egonthemighty/carV1/
 ├── README.md                    # Model card
 ├── carv1_final_model.zip        # Trained model
 ├── carv1_model_10000_steps.zip  # Checkpoint
@@ -153,9 +153,9 @@ commit_message=f"Training checkpoint - Reward: {mean_reward:.2f}, Step: {step}"
 
 ### 2. Version Your Experiments
 Use different repo names or branches for different experiments:
-- `username/carv1-baseline`
-- `username/carv1-curriculum`
-- `username/carv1-dense-rewards`
+- `egonthemighty/carv1-baseline`
+- `egonthemighty/carv1-curriculum`
+- `egonthemighty/carv1-dense-rewards`
 
 ### 3. Include Evaluation Metrics
 Update model card with evaluation results:
@@ -189,7 +189,7 @@ Error: Invalid token
 ```
 Error: Repository not found
 ```
-**Solution**: Check `repo_id` format is `username/repo-name` and you have permissions
+**Solution**: Check `repo_id` format is `username/repo-name` (e.g., `egonthemighty/carV1`) and you have permissions
 
 ### Upload Failed
 ```
@@ -228,7 +228,7 @@ class CustomHFCallback(HuggingFaceCallback):
 from huggingface_hub import hf_hub_download
 
 checkpoint = hf_hub_download(
-    repo_id="your-username/carv1-model",
+    repo_id="egonthemighty/carV1",
     filename="carv1_model_50000_steps.zip",
     repo_type="model"
 )
@@ -237,8 +237,8 @@ checkpoint = hf_hub_download(
 ### Comparing Models
 ```python
 # Load different versions
-model_v1 = load_from_hub("username/carv1-model", "carv1_v1")
-model_v2 = load_from_hub("username/carv1-model", "carv1_v2")
+model_v1 = load_from_hub("egonthemighty/carV1", "carv1_v1")
+model_v2 = load_from_hub("egonthemighty/carV1", "carv1_v2")
 
 # Evaluate both
 results_v1 = evaluate_policy(model_v1, env, n_eval_episodes=100)

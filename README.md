@@ -63,3 +63,7 @@ env.close()
 
 - Run tests: `python -m pytest tests/`
 - Check environment: `python tests/test_env.py`
+
+## Model Repository
+
+Trained models: [https://huggingface.co/egonthemighty/carV1](https://huggingface.co/egonthemighty/carV1)

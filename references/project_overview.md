@@ -107,6 +107,11 @@ tensorboard --logdir debug_output/tensorboard
 - Transfer learning to real vehicles
 - Multi-objective optimization (speed vs safety)
 
+## Links
+
+- **HuggingFace Models**: [https://huggingface.co/egonthemighty/carV1](https://huggingface.co/egonthemighty/carV1)
+- **Gymnasium Documentation**: [https://gymnasium.farama.org/](https://gymnasium.farama.org/)
+
 ## Common Issues & Solutions
 
 ### Import Errors

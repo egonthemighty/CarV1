@@ -74,7 +74,7 @@ DEBUG_CONFIG = {
 # Hugging Face Configuration
 HUGGINGFACE_CONFIG = {
     'enabled': False,  # Set to True to enable HF integration
-    'repo_id': None,  # Set to your repo: 'username/carv1-model'
+    'repo_id': 'egonthemighty/carV1',  # HuggingFace repository
     'private': False,  # Whether the repo should be private
     'push_freq': 50000,  # Push to HF every N steps
     'push_on_complete': True,  # Push final model when training completes
