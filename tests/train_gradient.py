@@ -1,6 +1,6 @@
 """
-Training script optimized for Paperspace Gradient with GPU support.
-This version is similar to train_camera.py but optimized for cloud GPU training.
+Training script optimized for cloud GPU training (Colab, Paperspace, etc).
+This version is similar to train_camera.py but optimized for headless GPU environments.
 """
 import os
 import sys
@@ -23,7 +23,7 @@ from env.camera_line_follow_env import CameraLineFollowEnv
 from config.config import TRAINING_CONFIG, LOGGING_CONFIG, HUGGINGFACE_CONFIG
 
 def main():
-    """Train the model on Gradient GPU"""
+    """Train the model with GPU acceleration"""
     # Use config settings
     config = TRAINING_CONFIG
     log_config = LOGGING_CONFIG
@@ -38,7 +38,7 @@ def main():
         directory.mkdir(parents=True, exist_ok=True)
     
     print("=" * 60)
-    print("PAPERSPACE GRADIENT GPU TRAINING")
+    print("CarV1 GPU TRAINING")
     print("=" * 60)
     print(f"Total timesteps: {config['total_timesteps']:,}")
     print(f"Learning rate: {config['learning_rate']}")
