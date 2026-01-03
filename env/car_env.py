@@ -255,14 +255,14 @@ class CarEnv(gym.Env):
     
     def _is_collision(self):
         """Check if car has collided with walls."""
-        return (self.state['x'] < 0 or 
-                self.state['x'] > self.window_width or
-                self.state['y'] < 0 or 
-                self.state['y'] > self.window_height)
+        return bool(self.state['x'] < 0 or 
+                    self.state['x'] > self.window_width or
+                    self.state['y'] < 0 or 
+                    self.state['y'] > self.window_height)
     
     def _is_terminated(self):
         """Check if episode should terminate."""
-        return self._is_collision()
+        return bool(self._is_collision())
     
     def _get_info(self):
         """Return additional information about current state."""
