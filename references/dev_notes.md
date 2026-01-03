@@ -1,5 +1,32 @@
 # Development Tasks and Notes
 
+## Hardware Specifications (Version 1)
+
+### Physical Platform
+- **Scale**: 1:8 RC car chassis
+- **Compute**: Raspberry Pi (inference)
+- **Camera**: Raspberry Pi Camera Module
+
+### Inputs (Sensors)
+- Raspberry Pi Camera (primary vision sensor)
+- *Future*: Additional sensors (IMU, encoders, ultrasonic, etc.)
+
+### Outputs (Controls)
+- **Steering**: Left/Right (PWM signal)
+- **Throttle**: Forward/Backward (PWM signal)
+
+### Control Interface
+- Pulse-Width Modulation (PWM) for both steering and throttle
+- Will require mapping from model output [-1, 1] to PWM duty cycle
+
+### Sim-to-Real Considerations
+- Current simulation uses abstract sensors (8 distance sensors)
+- Real hardware uses camera vision
+- Need to bridge gap between simulation and reality:
+  - Option 1: Train with camera images in simulation
+  - Option 2: Use distance sensors on real car to match simulation
+  - Option 3: Transfer learning from sim to real with domain adaptation
+
 ## Current Status
 Project infrastructure complete. Ready for development and training.
 
@@ -35,18 +62,26 @@ Project infrastructure complete. Ready for development and training.
 - [ ] Implement lap completion detection
 - [ ] Add track boundaries (not just window edges)
 - [ ] Improve reward function based on track progress
+- [ ] **Camera-based observations** (for sim-to-real transfer)
+- [ ] **PWM signal output mapping** (model → hardware)
 
 #### Priority 2 (Enhanced Realism)
 - [ ] More realistic car physics (friction model)
 - [ ] Different track layouts
 - [ ] Configurable difficulty levels
 - [ ] Collision with track boundaries (not instant termination)
+- [ ] **Vision-based sensor simulation** (match Pi Camera)
+- [ ] **1:8 scale physics parameters**
 
-#### Priority 3 (Advanced Features)
+#### Priority 3 (Advanced Features & Hardware Integration)
 - [ ] Multiple car types
 - [ ] Dynamic obstacles
 - [ ] Weather conditions affecting physics
 - [ ] Multi-agent racing
+- [ ] **Raspberry Pi deployment code**
+- [ ] **PWM hardware interface layer**
+- [ ] **Camera preprocessing pipeline**
+- [ ] **Real-time inference optimization**
 
 ### Training Improvements
 - [ ] Implement curriculum learning
@@ -108,18 +143,25 @@ Project infrastructure complete. Ready for development and training.
 - Implement speed display in render
 - Add mini-map showing full trajectory
 - Export episodes as videos
+- **PWM calibration tool**
+- **Camera image preprocessing utilities**
 
 ### Medium Term
 - Create procedural track generator
 - Add split times and lap records
 - Implement ghost car (previous best)
 - Multi-agent competitive racing
+- **Vision-based observation space**
+- **Raspberry Pi model optimization (quantization)**
+- **Hardware-in-the-loop testing**
 
 ### Long Term
 - 3D rendering with PyBullet or similar
 - VR support for human testing
-- Real-world sim-to-real transfer
-- Integration with actual RC car
+- **Real-world sim-to-real transfer**
+- **Integration with 1:8 scale RC car**
+- **Field testing and validation**
+- **Camera-based obstacle detection**
 
 ## Resources and References
 
