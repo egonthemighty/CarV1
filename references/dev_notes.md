@@ -196,11 +196,27 @@ Project infrastructure complete. Ready for development and training.
 - Gymnasium: https://gymnasium.farama.org/
 - RL Course: https://spinningup.openai.com/
 
+## Cloud Training Setup
+**Google Colab** (Primary Platform - Recommended)
+- Free Tesla T4 GPU available
+- Training time: 5-10 minutes for 1M timesteps (vs 30-60 min on CPU)
+- See: `CarV1_Colab_Training.ipynb` for complete workflow
+- Just upload and click "Run All"!
+
+**Local Training** (Fallback)
+- Use: `.\venv\Scripts\python.exe tests/train_camera.py`
+- CPU only, slower but works
+
 ## Meeting Notes / Decisions
 *Space for tracking design decisions and changes*
+
+### 2026-01-03 - Training Setup
+- ✅ Switched from Paperspace Gradient to Google Colab
+- ✅ Created complete Colab notebook for GPU training
+- ✅ Colab provides free GPU, easier setup, better UX
 
 ---
 
 **Last Updated**: 2026-01-03
 **Project Start**: 2026-01-03
-**Status**: Infrastructure complete, ready for development
+**Status**: Infrastructure complete, Colab training ready
