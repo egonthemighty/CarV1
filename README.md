@@ -36,6 +36,19 @@ CarV1/
    pip install -r requirements.txt
    ```
 
+### Important: Always Use the venv
+
+If pip is installing to the wrong location, use the venv's python directly:
+```bash
+# Windows
+.\venv\Scripts\python.exe -m pip install <package>
+.\venv\Scripts\python.exe <script.py>
+
+# Linux/Mac
+./venv/bin/python -m pip install <package>
+./venv/bin/python <script.py>
+```
+
 ## Usage
 
 ```python

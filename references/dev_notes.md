@@ -41,9 +41,15 @@ Project infrastructure complete. Ready for development and training.
 ## Immediate Next Steps
 
 ### 1. Environment Setup
-- [ ] Create virtual environment: `python -m venv venv`
-- [ ] Activate: `.\venv\Scripts\activate` (Windows)
-- [ ] Install dependencies: `pip install -r requirements.txt`
+- [x] Create virtual environment: `python -m venv venv`
+- [x] Activate: `.\venv\Scripts\activate` (Windows)
+- [x] Install dependencies: `pip install -r requirements.txt`
+
+**⚠️ IMPORTANT - Always use venv's python directly:**
+```bash
+.\venv\Scripts\python.exe tests/train_camera.py
+.\venv\Scripts\python.exe -m pip install <package>
+```
 
 ### 2. Validation
 - [ ] Run environment tests: `python tests/test_env.py`
