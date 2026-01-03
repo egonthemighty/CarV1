@@ -2,6 +2,15 @@
 
 ## Creating a Custom Gymnasium Environment
 
+## Custom environment information.  (Using infrastructure from gymnasium.firama.org)
+
+Gymnasium infrastrucure information:
+-https://gymnasium.farama.org/
+
+URL for custom environment:
+-https://gymnasium.farama.org/introduction/create_custom_env/
+
+
 ### Basic Structure
 
 All custom environments must inherit from `gym.Env` and implement these methods:

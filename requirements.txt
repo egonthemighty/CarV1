@@ -7,6 +7,9 @@ pygame>=2.5.0
 torch>=2.0.0
 stable-baselines3>=2.0.0
 
+# Hugging Face
+huggingface-hub>=0.20.0
+
 # Visualization & Logging
 matplotlib>=3.7.0
 tensorboard>=2.13.0
