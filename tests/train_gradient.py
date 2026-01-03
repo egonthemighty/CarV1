@@ -20,12 +20,13 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 
 from env.camera_line_follow_env import CameraLineFollowEnv
-from config.config import TRAINING_CONFIG, HUGGINGFACE_CONFIG
+from config.config import TRAINING_CONFIG, LOGGING_CONFIG, HUGGINGFACE_CONFIG
 
 def main():
     """Train the model on Gradient GPU"""
     # Use config settings
     config = TRAINING_CONFIG
+    log_config = LOGGING_CONFIG
     
     # Create directories for outputs
     models_dir = Path("models")
@@ -63,7 +64,7 @@ def main():
     
     # Setup callbacks
     checkpoint_callback = CheckpointCallback(
-        save_freq=config["save_freq"],
+        save_freq=log_config["save_freq"],
         save_path=str(checkpoints_dir),
         name_prefix="ppo_camera_line_follow",
         save_replay_buffer=False,
@@ -74,10 +75,10 @@ def main():
         eval_env,
         best_model_save_path=str(best_model_dir),
         log_path=str(logs_dir),
-        eval_freq=config["eval_freq"],
+        eval_freq=log_config["eval_freq"],
         deterministic=True,
         render=False,
-        n_eval_episodes=config["n_eval_episodes"],
+        n_eval_episodes=log_config["n_eval_episodes"],
     )
     
     callbacks = CallbackList([checkpoint_callback, eval_callback])
