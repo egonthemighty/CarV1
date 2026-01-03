@@ -30,6 +30,7 @@ Simulation (Training)          Real Hardware (Deployment)
 
 ### RC Car Platform (1:8 Scale)
 - **Chassis**: 1:8 scale RC car
+- **Width**: ~1 foot (~30cm)
 - **Length**: ~50-60cm (approximate for 1:8 scale)
 - **Wheelbase**: ~30-35cm
 - **Weight**: 2-4kg (with electronics)
@@ -40,11 +41,19 @@ Simulation (Training)          Real Hardware (Deployment)
 - **Storage**: MicroSD card, 32GB+
 - **OS**: Raspberry Pi OS or Ubuntu
 
+### Track Environment
+- **Boundaries**: Two white ropes on ground
+- **Track Width**: Variable, 30cm (vehicle width) to 90cm (3 feet)
+- **Track Layout**: Closed loop (manipulable on the fly)
+- **Track Appearance**: Infinite road from vehicle perspective
+- **Challenge**: Width variations before turns (potential confusion)
+
 ### Vision System
 - **Camera**: Raspberry Pi Camera Module v2 or HQ Camera
 - **Resolution**: 640x480 (training), adjustable for inference
 - **Frame Rate**: 30 FPS minimum
 - **Field of View**: Standard ~62° diagonal
+- **Target Detection**: White rope lines on ground (contrast-based)
 
 ### Control System
 
@@ -173,25 +182,27 @@ frame = camera.capture_array()
 - Real car uses camera vision
 - Different observation spaces
 
-### Solutions
+### Solution: Camera-Based Simulation (Selected Approach)
 
-#### Option 1: Camera-Based Simulation (Recommended)
-- Modify simulation to use rendered camera images
-- Train model on visual input from start
-- Better transfer to real hardware
-- Implementation: Use Pygame surface → numpy array as observation
+**Simulation Design:**
+- Render top-down view with two white lines (rope boundaries)
+- Variable track width (30-90cm in simulation)
+- Curved and straight sections
+- Track width variations before turns (to train handling)
+- Camera view: First-person from car position
 
-#### Option 2: Add Distance Sensors to Real Car
-- Install ultrasonic/IR sensors on physical car (8 sensors)
-- Match simulation sensor configuration
-- Simpler transfer, matches current model
-- Implementation: Use HC-SR04 or similar sensors
+**Key Features to Simulate:**
+1. **White rope detection**: High contrast lines on darker ground
+2. **Variable width**: Random width changes (30-90cm)
+3. **Curves**: Various turn radii and angles
+4. **Width transitions**: Widening before turns (challenge scenario)
+5. **Infinite track**: Loop that appears continuous
 
-#### Option 3: Domain Adaptation
-- Train in simulation with current sensors
-- Fine-tune on real camera data
-- Use transfer learning techniques
-- Implementation: Collect real-world data, retrain final layers
+**Implementation:**
+- Use Pygame to render track with white lines
+- Extract camera view from rendered scene
+- Convert to numpy array as observation
+- Preprocess to match Pi Camera format
 
 ## Model Optimization for Raspberry Pi
 

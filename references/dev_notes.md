@@ -3,12 +3,20 @@
 ## Hardware Specifications (Version 1)
 
 ### Physical Platform
-- **Scale**: 1:8 RC car chassis
+- **Scale**: 1:8 RC car chassis (~1 foot / 30cm wide)
 - **Compute**: Raspberry Pi (inference)
-- **Camera**: Raspberry Pi Camera Module
+- **Camera**: Raspberry Pi Camera Module (vision-based navigation)
+
+### Track Environment
+- **Boundaries**: Two white ropes on ground
+- **Track Width**: Variable 30cm (min) to 90cm (max)
+- **Layout**: Manipulable closed loop (appears infinite)
+- **Challenge**: Width variations especially before turns
 
 ### Inputs (Sensors)
 - Raspberry Pi Camera (primary vision sensor)
+  - Detects white rope boundaries
+  - Processes track position and curvature
 - *Future*: Additional sensors (IMU, encoders, ultrasonic, etc.)
 
 ### Outputs (Controls)
@@ -57,12 +65,14 @@ Project infrastructure complete. Ready for development and training.
 
 ### Environment Features to Add
 
-#### Priority 1 (Core Functionality)
-- [ ] Add track waypoints for navigation
-- [ ] Implement lap completion detection
-- [ ] Add track boundaries (not just window edges)
-- [ ] Improve reward function based on track progress
-- [ ] **Camera-based observations** (for sim-to-real transfer)
+#### Priority 1 (Core Functionality - Camera-Based)
+- [ ] **Rebuild environment with camera observations** (image input)
+- [ ] **Render white rope boundaries** (simulate real track)
+- [ ] **Variable track width** (30-90cm random variations)
+- [ ] **Track with curves and straights**
+- [ ] **Reward function**: Stay centered between ropes
+- [ ] **Penalty for leaving track** (crossing rope boundaries)
+- [ ] **Width variation before turns** (challenge scenario)
 - [ ] **PWM signal output mapping** (model → hardware)
 
 #### Priority 2 (Enhanced Realism)
