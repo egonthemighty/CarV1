@@ -75,6 +75,11 @@ class FirstPersonLineFollowEnv(gym.Env):
         self.max_steering_angle = np.deg2rad(45)
         self.dt = 0.033  # ~30 FPS
         
+        # Track curvature parameters
+        self.curve_frequency = 0.05  # How often curves appear (rad/m)
+        self.curve_amplitude = 0.3  # Maximum curvature (rad/m)
+        self.curve_variation = 0.2  # Random variation in curves
+        
         # View parameters for rendering first-person view
         self.view_distance = 3.0  # meters ahead to render
         self.view_width = 2.0  # meters of track width in view
@@ -216,6 +221,59 @@ class FirstPersonLineFollowEnv(gym.Env):
             # Extract features from camera view
             return self._extract_features()
     
+    def _get_track_curvature(self, distance):
+        """Get track curvature (heading change) at a given distance.
+        Returns curvature in radians per meter.
+        Uses smooth curves based on sine waves for natural turns.
+        """
+        # Base curve using sine wave
+        base_curve = np.sin(distance * self.curve_frequency) * self.curve_amplitude
+        
+        # Add variation with different frequency
+        variation = np.sin(distance * self.curve_frequency * 1.7) * self.curve_variation
+        
+        return base_curve + variation
+    
+    def _get_track_heading(self, distance):
+        """Get track heading (angle) at a given distance ahead.
+        Integrates curvature to get total heading change.
+        """
+        # Sample curvature and integrate to get heading
+        # Use simple numerical integration
+        heading = 0.0
+        step_size = 0.1  # Integration step
+        current_dist = self.state['distance']
+        
+        num_steps = int((distance - current_dist) / step_size)
+        for i in range(num_steps):
+            dist = current_dist + i * step_size
+            heading += self._get_track_curvature(dist) * step_size
+        
+        return heading
+    
+    def _get_track_position(self, distance):
+        """Get track center position (x, y) at a given distance.
+        Integrates heading to get 2D position of track centerline.
+        """
+        # Start from car's current position
+        x, y = 0.0, 0.0
+        heading = 0.0
+        
+        step_size = 0.1
+        current_dist = self.state['distance']
+        num_steps = int((distance - current_dist) / step_size)
+        
+        for i in range(num_steps):
+            dist = current_dist + i * step_size
+            curvature = self._get_track_curvature(dist)
+            heading += curvature * step_size
+            
+            # Move forward in current heading direction
+            x += np.cos(heading) * step_size
+            y += np.sin(heading) * step_size
+        
+        return x, y, heading
+    
     def _extract_features(self):
         """Extract feature representation from camera view."""
         # Calculate line positions relative to car center
@@ -317,7 +375,7 @@ class FirstPersonLineFollowEnv(gym.Env):
             )
     
     def _draw_first_person_view(self, canvas):
-        """Draw clean road and track view (what Rover's camera actually sees)."""
+        """Draw clean road and track view with curves (what Rover's camera actually sees)."""
         width = canvas.get_width()
         height = canvas.get_height()
         
@@ -333,26 +391,47 @@ class FirstPersonLineFollowEnv(gym.Env):
         pygame.draw.rect(canvas, (135, 206, 235), (0, 0, width, horizon_y))  # Sky blue
         pygame.draw.rect(canvas, (55, 55, 55), (0, horizon_y, width, height))  # Uniform ground
         
-        # Draw track lines (white ropes) with proper perspective projection
+        # Draw track lines (white ropes) with curves
         half_track = self.current_track_width / 2
         
-        # Project points from 3D world to 2D screen
+        # Project points from 3D world to 2D screen, following track curvature
         segments = 30
         for i in range(segments):
             # Distance ahead in world coordinates
             dist_near = (i / segments) * self.view_distance
             dist_far = ((i + 1) / segments) * self.view_distance
             
-            # Skip the very closest segment (would be behind camera)
+            # Skip the very closest segment
             if dist_near < 0.1:
                 continue
             
-            # Project near and far points
-            def project_point(distance, lateral_offset):
+            # Get track positions at near and far distances (accounts for curves)
+            track_near_x, track_near_y, track_near_heading = self._get_track_position(
+                self.state['distance'] + dist_near
+            )
+            track_far_x, track_far_y, track_far_heading = self._get_track_position(
+                self.state['distance'] + dist_far
+            )
+            
+            # Project near and far points with track curvature
+            def project_point(track_x, track_y, track_heading, lateral_offset):
                 """Project a 3D point to 2D screen coordinates."""
+                # Point on track at given lateral offset
+                point_x = track_x + lateral_offset * np.cos(track_heading + np.pi/2)
+                point_y = track_y + lateral_offset * np.sin(track_heading + np.pi/2)
+                
+                # Transform to camera space (car is at origin facing forward)
+                # Rotate by negative car heading
+                car_heading = self.state['heading']
+                rel_x = point_x * np.cos(-car_heading) - point_y * np.sin(-car_heading)
+                rel_y = point_x * np.sin(-car_heading) + point_y * np.cos(-car_heading)
+                
+                # Add car's lateral offset
+                rel_x -= self.state['lateral_offset']
+                
                 # 3D position relative to camera
-                z = distance  # Distance ahead
-                x = lateral_offset - self.state['lateral_offset']  # Lateral offset
+                z = rel_y  # Distance ahead
+                x = rel_x  # Lateral position
                 y = -cam_height  # Ground is below camera
                 
                 # Apply camera pitch rotation
@@ -360,7 +439,7 @@ class FirstPersonLineFollowEnv(gym.Env):
                 y_rot = z * np.sin(-cam_pitch_rad) + y * np.cos(-cam_pitch_rad)
                 
                 # Perspective projection
-                if z_rot <= 0.01:  # Too close or behind camera
+                if z_rot <= 0.01:
                     return None
                 
                 # Screen coordinates
@@ -370,10 +449,10 @@ class FirstPersonLineFollowEnv(gym.Env):
                 return (screen_x, screen_y)
             
             # Project track edges at near and far distances
-            left_near = project_point(dist_near, -half_track)
-            right_near = project_point(dist_near, half_track)
-            left_far = project_point(dist_far, -half_track)
-            right_far = project_point(dist_far, half_track)
+            left_near = project_point(track_near_x, track_near_y, track_near_heading, -half_track)
+            right_near = project_point(track_near_x, track_near_y, track_near_heading, half_track)
+            left_far = project_point(track_far_x, track_far_y, track_far_heading, -half_track)
+            right_far = project_point(track_far_x, track_far_y, track_far_heading, half_track)
             
             if not all([left_near, right_near, left_far, right_far]):
                 continue
@@ -393,17 +472,39 @@ class FirstPersonLineFollowEnv(gym.Env):
         fov_rad = np.deg2rad(self.camera_fov)
         half_track = self.current_track_width / 2
         
+        # Use distance traveled to create scrolling effect
+        distance_offset = self.state['distance'] % 0.4  # Repeat every 0.4m
+        
         segments = 30
         for i in range(segments):
+            # Offset distance by accumulated travel for scrolling effect
             dist_near = (i / segments) * self.view_distance
             dist_far = ((i + 1) / segments) * self.view_distance
             
             if dist_near < 0.1:
                 continue
             
-            def project_point(distance, lateral_offset):
-                z = distance
-                x = lateral_offset - self.state['lateral_offset']
+            # Get track positions at near and far distances (with curves)
+            track_near_x, track_near_y, track_near_heading = self._get_track_position(
+                self.state['distance'] + dist_near
+            )
+            track_far_x, track_far_y, track_far_heading = self._get_track_position(
+                self.state['distance'] + dist_far
+            )
+            
+            def project_point(track_x, track_y, track_heading, lateral_offset):
+                # Point on track at given lateral offset
+                point_x = track_x + lateral_offset * np.cos(track_heading + np.pi/2)
+                point_y = track_y + lateral_offset * np.sin(track_heading + np.pi/2)
+                
+                # Transform to camera space
+                car_heading = self.state['heading']
+                rel_x = point_x * np.cos(-car_heading) - point_y * np.sin(-car_heading)
+                rel_y = point_x * np.sin(-car_heading) + point_y * np.cos(-car_heading)
+                rel_x -= self.state['lateral_offset']
+                
+                z = rel_y
+                x = rel_x
                 y = -cam_height
                 
                 z_rot = z * np.cos(-cam_pitch_rad) - y * np.sin(-cam_pitch_rad)
@@ -416,17 +517,19 @@ class FirstPersonLineFollowEnv(gym.Env):
                 screen_y = height / 2 - (y_rot / z_rot) * (width / (2 * np.tan(fov_rad / 2)))
                 return (screen_x, screen_y)
             
-            left_near = project_point(dist_near, -half_track)
-            right_near = project_point(dist_near, half_track)
-            left_far = project_point(dist_far, -half_track)
-            right_far = project_point(dist_far, half_track)
+            left_near = project_point(track_near_x, track_near_y, track_near_heading, -half_track)
+            right_near = project_point(track_near_x, track_near_y, track_near_heading, half_track)
+            left_far = project_point(track_far_x, track_far_y, track_far_heading, -half_track)
+            right_far = project_point(track_far_x, track_far_y, track_far_heading, half_track)
             
             if not all([left_near, right_near, left_far, right_far]):
                 continue
             
             # Draw alternating dark bands (for human depth perception only)
-            if i % 2 == 0:
-                band_color = (45, 45, 45, 100)  # Slightly darker with transparency
+            # Use distance to determine band color for scrolling effect
+            band_index = int((self.state['distance'] + dist_near + distance_offset) / 0.2)
+            if band_index % 2 == 0:
+                band_color = (45, 45, 45, 80)  # Slightly darker with some transparency
                 # Create surface with alpha for blending
                 band_surface = pygame.Surface((width, height), pygame.SRCALPHA)
                 pygame.draw.polygon(band_surface, band_color, [
