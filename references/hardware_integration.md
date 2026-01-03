@@ -30,10 +30,30 @@ Simulation (Training)          Real Hardware (Deployment)
 
 ### RC Car Platform (1:8 Scale)
 - **Chassis**: 1:8 scale RC car
-- **Width**: ~1 foot (~30cm)
-- **Length**: ~50-60cm (approximate for 1:8 scale)
-- **Wheelbase**: ~30-35cm
-- **Weight**: 2-4kg (with electronics)
+- **Total Length**: 24 inches (2 feet with bumpers)
+- **Wheelbase Length**: 13 inches (hub to hub)
+- **Wheelbase Width**: 9.625 inches (9 5/8", center to center)
+- **Weight**: TBD (with electronics)
+
+### Camera Specifications
+- **Camera Position**: Centered on chassis (6.5" from front hub, halfway along wheelbase)
+- **Camera Height**: 10 inches above ground
+- **Camera Focus**: 48 inches ahead of camera position
+- **Camera Pitch**: ~11.8° downward (calculated from height/focus distance)
+- **Camera Model**: Raspberry Pi Camera Module (v2 or HQ - TBD)
+- **Field of View**: ~62.2° horizontal, ~48.8° vertical (Pi Camera v2)
+- **Resolution**: 640x480 for inference (can capture higher)
+- **Note**: All camera parameters are configurable in environment code
+
+### Physics Model (PLACEHOLDER - To Be Developed)
+**Note**: Current environment uses simplified bicycle model. Will be replaced with accurate physics based on:
+- Actual wheelbase geometry (13" length × 9.625" width)
+- Measured steering limits and response
+- Measured throttle/brake response
+- Real-world traction characteristics
+- Center of gravity position
+- Suspension characteristics (if applicable)
+- **Action**: Collect empirical data during initial hardware testing
 
 ### Compute Module
 - **Board**: Raspberry Pi (4B recommended for inference speed)
