@@ -19,7 +19,7 @@ from stable_baselines3.common.callbacks import (
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 
-from env.camera_line_follow_env import CameraLineFollowEnv
+from env.first_person_env import FirstPersonLineFollowEnv  # First-person camera view
 from config.config import TRAINING_CONFIG, LOGGING_CONFIG, HUGGINGFACE_CONFIG
 
 def main():
@@ -49,7 +49,7 @@ def main():
     # Create vectorized environment
     print("\nCreating training environment...")
     env = make_vec_env(
-        CameraLineFollowEnv,
+        FirstPersonLineFollowEnv,
         n_envs=1,
         env_kwargs={"render_mode": None}  # No rendering on GPU
     )
@@ -57,7 +57,7 @@ def main():
     # Create evaluation environment
     print("Creating evaluation environment...")
     eval_env = make_vec_env(
-        CameraLineFollowEnv,
+        FirstPersonLineFollowEnv,
         n_envs=1,
         env_kwargs={"render_mode": None}
     )
