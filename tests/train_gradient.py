@@ -51,7 +51,11 @@ def main():
     env = make_vec_env(
         FirstPersonLineFollowEnv,
         n_envs=1,
-        env_kwargs={"render_mode": None}  # No rendering on GPU
+        env_kwargs={
+            "render_mode": None,
+            "use_raw_pixels": True,  # Use camera images instead of features
+            "camera_resolution": (84, 84)  # Standard resolution for CNN
+        }
     )
     
     # Create evaluation environment
@@ -59,7 +63,11 @@ def main():
     eval_env = make_vec_env(
         FirstPersonLineFollowEnv,
         n_envs=1,
-        env_kwargs={"render_mode": None}
+        env_kwargs={
+            "render_mode": None,
+            "use_raw_pixels": True,
+            "camera_resolution": (84, 84)
+        }
     )
     
     # Setup callbacks
