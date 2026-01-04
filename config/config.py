@@ -41,7 +41,7 @@ REWARD_CONFIG = {
 TRAINING_CONFIG = {
     'algorithm': 'PPO',
     'policy_type': 'CnnPolicy',  # CNN for raw pixels, MLP for features
-    'total_timesteps': 2_000_000,  # Increased for vision-based learning
+    'total_timesteps': 500_000,  # Reduced for faster troubleshooting iterations
     'learning_rate': 3e-4,
     'n_steps': 2048,
     'batch_size': 64,
