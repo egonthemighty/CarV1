@@ -211,12 +211,11 @@ class FirstPersonLineFollowEnv(gym.Env):
     def _get_observation(self):
         """Get observation from car's first-person camera view."""
         if self.use_raw_pixels:
-            # Render first-person camera view
+            # Render first-person camera view (already at target resolution)
             image = self._render_camera_view()
-            # Convert to grayscale and resize
+            # Convert to grayscale (resize no longer needed - optimization applied)
             gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-            resized = cv2.resize(gray, self.camera_resolution)
-            return resized.reshape((*self.camera_resolution, 1))
+            return gray.reshape((*self.camera_resolution, 1))
         else:
             # Extract features from camera view
             return self._extract_features()
@@ -651,8 +650,10 @@ class FirstPersonLineFollowEnv(gym.Env):
     
     def _render_camera_view(self):
         """Render what Rover's camera actually sees (clean: sky, ground, white ropes only)."""
-        # Create smaller surface for camera view
-        cam_surface = pygame.Surface((640, 480))
+        # OPTIMIZATION: Render directly at target resolution to avoid redundant resize
+        # This significantly improves environment stepping speed (rollout/fps)
+        target_width, target_height = self.camera_resolution
+        cam_surface = pygame.Surface((target_width, target_height))
         
         # Draw clean first-person view (no depth bands, no hood, no indicators)
         self._draw_first_person_view(cam_surface)

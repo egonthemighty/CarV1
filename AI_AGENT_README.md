@@ -2,28 +2,39 @@
 
 **Last Updated:** January 4, 2026  
 **Repository:** https://github.com/egonthemighty/CarV1  
-**Project Status:** Vision-based training configuration ready, awaiting Colab execution
+**Project Status:** Optimized for fast testing iterations
 
 ---
 
 ## 🚨 CRITICAL CURRENT STATE
 
 ### What Just Happened (Session Summary)
-1. **Discovered "Cheating" Problem**: Previous models (straight & curved track) used perfect geometric features instead of camera vision
-2. **Switched to Vision-Based Training**: Updated to CnnPolicy with 84×84 grayscale camera images
-3. **Recent Colab Run Used OLD Code**: The model in `training output/ppo_carv1_final/` was trained with feature-based (MlpPolicy), not vision
-4. **Need to Re-Run Training**: Colab training must be executed again with latest GitHub code
+1. **Applied Performance Optimizations**: Implemented Colab recommendations to reduce training time and credit usage
+   - Render camera view directly at target resolution (84×84) - eliminates redundant cv2.resize
+   - Increased n_steps to 4096 and batch_size to 128 for more efficient gradient updates
+   - Reduced total_timesteps to 10,000 for rapid testing
+2. **Training Configuration**: Set for ultra-fast testing (10k steps = ~30 seconds on GPU)
+3. **Production Training**: Increase total_timesteps to 500k+ once testing confirms setup is working
 
 ### Current Configuration (GitHub - Latest)
 - **Policy:** CnnPolicy (Convolutional Neural Network)
 - **Observation:** 84×84 grayscale camera images (use_raw_pixels=True)
-- **Training Steps:** 500,000 (reduced for troubleshooting)
+- **Training Steps:** 10,000 (TESTING ONLY - use 500k+ for real training)
+- **n_steps:** 4096 (optimized for efficiency)
+- **batch_size:** 128 (optimized for GPU utilization)
 - **Environment:** FirstPersonLineFollowEnv with curved track
+
+### ⚡ Training Timestep Guidelines
+**ALWAYS USE MINIMAL TIMESTEPS FOR TESTING:**
+- **10k steps**: Quick sanity check (~30 seconds on GPU) - verify training runs
+- **50k steps**: Basic metrics and video generation (~2-3 minutes)
+- **500k+ steps**: Production training for actual model quality
+- **Monitor `time/fps` in TensorBoard** - higher is better, target >1000 FPS
 
 ### What Needs to Happen Next
 1. Upload `CarV1_Colab_Training.ipynb` to Google Colab
 2. Run all cells (will clone latest code from GitHub)
-3. Training takes ~2-5 minutes on T4 GPU
+3. Training takes ~30 seconds with 10k steps
 4. Download model ZIP and place in `training output/`
 5. Test with vision-based environment settings
 

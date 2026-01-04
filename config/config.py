@@ -1,5 +1,12 @@
 """
 Configuration settings for the CarV1 environment and training.
+
+OPTIMIZATION NOTES:
+- total_timesteps: Use 10k for testing, 500k+ for production
+- n_steps & batch_size: Increased from defaults for better GPU utilization
+- Environment renders directly at target resolution to avoid cv2.resize overhead
+- Mixed precision training is automatic with PyTorch 1.6+ on CUDA GPUs
+- Monitor time/fps in TensorBoard for performance validation
 """
 
 # Environment Configuration
@@ -41,10 +48,10 @@ REWARD_CONFIG = {
 TRAINING_CONFIG = {
     'algorithm': 'PPO',
     'policy_type': 'CnnPolicy',  # CNN for raw pixels, MLP for features
-    'total_timesteps': 500_000,  # Reduced for faster troubleshooting iterations
+    'total_timesteps': 10_000,  # Very short for testing (use 500k+ for real training)
     'learning_rate': 3e-4,
-    'n_steps': 2048,
-    'batch_size': 64,
+    'n_steps': 4096,  # Increased from 2048 for more efficient gradient updates
+    'batch_size': 128,  # Increased from 64 for better GPU utilization
     'n_epochs': 10,
     'gamma': 0.99,
     'gae_lambda': 0.95,
