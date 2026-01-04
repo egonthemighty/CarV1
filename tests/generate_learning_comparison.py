@@ -1,6 +1,6 @@
 """
 Generate 2x2 comparison video showing Rover's learning progress
-Shows 4 training checkpoints side-by-side: 250k, 500k, 750k, and 1M timesteps
+Shows 4 training checkpoints side-by-side: 100k, 250k, 350k, and 500k timesteps
 """
 import sys
 sys.path.append('.')
@@ -21,11 +21,11 @@ def generate_comparison_video(checkpoint_steps, output_folder, max_steps=500):
     models = []
     labels = []
     for steps in checkpoint_steps:
-        if steps == 1000000:
-            model_path = "training output/carv1_models/ppo_camera_line_follow_final.zip"
-            label = f"Final (1M)"
+        if steps == 500000:
+            model_path = "training output/ppo_carv1_final/ppo_camera_line_follow_final.zip"
+            label = f"Final (500k)"
         else:
-            model_path = f"training output/carv1_models/checkpoints/ppo_camera_line_follow_{steps}_steps.zip"
+            model_path = f"training output/ppo_carv1_final/checkpoints/ppo_camera_line_follow_{steps}_steps.zip"
             label = f"{steps//1000}k steps"
         
         print(f"Loading model: {label}")
@@ -150,8 +150,8 @@ def generate_comparison_video(checkpoint_steps, output_folder, max_steps=500):
     print(f"{'='*60}")
 
 if __name__ == "__main__":
-    # Compare 4 checkpoints: 250k, 500k, 750k, 1M
-    checkpoint_steps = [250000, 500000, 750000, 1000000]
+    # Compare 4 checkpoints: 100k, 250k, 350k, 500k
+    checkpoint_steps = [100000, 250000, 350000, 500000]
     output_folder = "training output/videos"
     
     # Run for 500 steps (about 16 seconds at 30fps)

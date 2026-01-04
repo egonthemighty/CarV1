@@ -19,8 +19,12 @@ def generate_video(model_path, output_folder, num_episodes=1):
     print(f"Loading model from: {model_path}")
     model = PPO.load(model_path)
     
-    # Create environment with rgb_array rendering
-    env = FirstPersonLineFollowEnv(render_mode="rgb_array")
+    # Create environment with rgb_array rendering and raw pixels enabled
+    env = FirstPersonLineFollowEnv(
+        render_mode="rgb_array",
+        use_raw_pixels=True,
+        camera_resolution=(84, 84)
+    )
     
     for episode in range(num_episodes):
         print(f"\nGenerating video for episode {episode + 1}...")
@@ -104,7 +108,7 @@ def generate_video(model_path, output_folder, num_episodes=1):
     print(f"✓ Saved to: {output_folder}")
 
 if __name__ == "__main__":
-    model_path = "training output/carv1_models/ppo_camera_line_follow_final.zip"
+    model_path = "training output/ppo_carv1_final.zip"
     output_folder = "training output/videos"
     
     generate_video(model_path, output_folder, num_episodes=1)
